@@ -1,8 +1,8 @@
 # Specify the provider and access details
 provider "aws" {
-  region                  = "us-east-1"
-  shared_credentials_file = "/home/anderson/.aws/credentials"
-  profile                 = "terraform-test"
+  region                  = var.region
+  shared_credentials_file = var.shared_credentials_file
+  profile                 = var.profile
 }
 
 provider "archive" {}

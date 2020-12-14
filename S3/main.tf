@@ -1,7 +1,7 @@
 provider "aws" {
-  region                  = "us-east-1"
-  shared_credentials_file = "/home/anderson/.aws/credentials"
-  profile                 = "terraform-test"
+  region                  = var.region
+  shared_credentials_file = var.shared_credentials_file
+  profile                 = var.profile
 }
 
 resource "aws_s3_bucket" "b" {
