@@ -1,4 +1,8 @@
-import os
+import json
 
 def lambda_handler(event, context):
-    return "{} from Lambda!".format(os.environ['greeting'])
+    # TODO implement
+    return {
+        'statusCode': 200,
+        'body': json.dumps('Hello from Lambda!')
+    }
