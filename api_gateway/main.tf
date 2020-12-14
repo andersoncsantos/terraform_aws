@@ -4,7 +4,7 @@ provider "aws" {
   profile                 = var.profile
 }
 
-### api_gateway ###
+# api_gateway
 resource "aws_api_gateway_rest_api" "api_test" {
   name        = "api_test"
   description = "This is my API for demonstration purposes"
@@ -106,4 +106,19 @@ resource "aws_api_gateway_integration_response" "integration_response_200" {
   resource_id = aws_api_gateway_resource.resource_test_2.id
   http_method = aws_api_gateway_method.saldo_disponivel_pv.http_method
   status_code = aws_api_gateway_method_response.response_200.status_code
+}
+
+resource "aws_api_gateway_deployment" "api_test_deployment" {
+  rest_api_id = aws_api_gateway_rest_api.api_test.id
+  stage_name  = "api_test"
+
+  triggers = {
+    redeployment = sha1(join(",", list(
+      jsonencode(aws_api_gateway_integration.lambda_integration),
+    )))
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
