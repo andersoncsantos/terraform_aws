@@ -47,6 +47,50 @@ resource "aws_api_gateway_integration" "lambda_integration" {
 
 }
 
+# lambda_function
+data "aws_iam_policy_document" "policy" {
+  statement {
+    sid    = ""
+    effect = "Allow"
+
+    principals {
+      identifiers = ["lambda.amazonaws.com"]
+      type        = "Service"
+    }
+
+    actions = ["sts:AssumeRole"]
+  }
+}
+
+resource "aws_iam_role" "hello_lambda_role" {
+  name               = "hello_lambda_role"
+  assume_role_policy = data.aws_iam_policy_document.policy.json
+}
+
+
+data "archive_file" "zip" {
+  type        = "zip"
+  source_file = "./data/hello_lambda.py"
+  output_path = "./data/hello_lambda.zip"
+}
+
+resource "aws_lambda_function" "hello_lambda" {
+  function_name = "hello_lambda"
+
+  filename         = data.archive_file.zip.output_path
+  source_code_hash = data.archive_file.zip.output_base64sha256
+
+  role    = aws_iam_role.hello_lambda_role.arn
+  handler = "hello_lambda.lambda_handler"
+  runtime = "python3.8"
+
+  environment {
+    variables = {
+      greeting = "Hello"
+    }
+  }
+}
+
 resource "aws_lambda_permission" "lambda_permission" {
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
